@@ -2,6 +2,8 @@ const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
 const pointContainer = document.getElementById('point-container');
 const points = document.getElementById('points');
+const highScore = document.getElementById('high-score');
+const highScoreContainer = document.getElementById('high-score-container');
 const playButton = document.getElementById('play');
 const spaceToStart = document.getElementById('space-to-start');
 const loseScreen = document.getElementById('lose');
@@ -53,7 +55,12 @@ function update() {
         obstacles[1].y = obstacles[0].height + settings.spaceBetweenPipes;
         obstacles[1].height = canvas.height - obstacles[1].y;
 
-        points.innerText = `${parseInt(points.innerText) + 1}`;
+        let currentPoints = parseInt(points.innerText) + 1;
+        if (currentPoints >= parseInt(highScore.innerText)){
+            highScore.innerText = `${currentPoints}`;
+        }
+        points.innerText = `${currentPoints}`;
+
     }
 
     if (running){
@@ -64,6 +71,7 @@ function update() {
 function lose(){
     running = false;
     allowGameToStart = false;
+    localStorage.setItem("highScore",`${parseInt(highScore.innerText)}`);
     loseScreen.classList.remove('hidden');
     playButton.classList.remove('hidden');
 }
@@ -79,11 +87,16 @@ function draw() {
     });
 }
 playButton.addEventListener('click', e => {
+    highScore.innerText = localStorage.getItem("highScore");
+    if (localStorage.getItem("highScore") == null){
+        highScore.innerText = `0`;
+    }
     obstacles = getSleepObstacles();
     player = getSleepPlayer();
     canvas.classList.remove('hidden');
     pointContainer.classList.remove('hidden');
     spaceToStart.classList.remove('hidden');
+    highScoreContainer.classList.remove('hidden');
     gameTitle.classList.add('hidden');
     loseScreen.classList.add('hidden');
     playButton.classList.add('hidden');

@@ -1,3 +1,9 @@
+html, button{
+  font-family: "Tiny5", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.4rem;
+}
 body {
   margin: 0;
   display: flex;
@@ -33,4 +39,14 @@ canvas {
 #play:active{
   opacity: 0.6;
 }
-
+.d-flex-row{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 40px;
+}
+#space-to-start{
+  text-decoration: underline;
+  font-weight: bold;
+}
