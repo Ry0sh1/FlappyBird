@@ -88,6 +88,7 @@ playButton.addEventListener('click', e => {
     loseScreen.classList.add('hidden');
     playButton.classList.add('hidden');
     allowGameToStart = true;
+    points.innerText = '0';
     draw();
 })
 document.addEventListener('keypress', (e) => {
