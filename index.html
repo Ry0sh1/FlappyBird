@@ -7,8 +7,11 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>Score: <span id="points">0</span></h1>
-<canvas id="gameCanvas" width="400" height="400"></canvas>
+<h1 id="point-container" class="hidden">Score: <span id="points">0</span></h1>
+<h1 id="game-title">Flappy Bird by Ryoshi!</h1>
+<button id="play">Play</button>
+<h1 class="hidden" id="space-to-start">Press Space to Start and to Jump!</h1>
+<canvas id="game-canvas" width="400" height="600" class="hidden"></canvas>
 <h1 id="lose" class="hidden">Du hast Verloren!</h1>
 <script src="script.js"></script>
 </body>

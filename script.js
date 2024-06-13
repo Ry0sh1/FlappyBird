@@ -1,40 +1,32 @@
-const canvas = document.getElementById('gameCanvas');
+const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
+const pointContainer = document.getElementById('point-container');
 const points = document.getElementById('points');
-let running = true;
+const playButton = document.getElementById('play');
+const spaceToStart = document.getElementById('space-to-start');
+const loseScreen = document.getElementById('lose');
+const gameTitle = document.getElementById('game-title');
+let running = false;
+let allowGameToStart = false;
 
-const player = {
-    x: 50,
-    y: 350,
-    width: 30,
-    height: 30,
-    dy: 0,
-    jumpForce: 10,
-    gravity: 0.8
-};
+let player = null;
 
-const obstacles = [
-    {x: 400, y: 300, width: 50, height: 100},
-    {x: 400, y: 0, width: 50, height: 100},
-];
+const settings= {
+    playerX: 50,
+    playerWidth: 30,
+    playerHeight: 30,
+    playerJumpForce: 10,
+    playerGravity: 0.8,
+    spaceBetweenPipes: 150,
+    pipeWidth: 50,
+    pipeSpeed: 5,
+}
 
-let keys = {};
-
-document.addEventListener('keydown', (e) => {
-    keys[e.key] = true;
-});
-
-document.addEventListener('keyup', (e) => {
-    keys[e.key] = false;
-    if (e.key === 'ArrowUp') {
-        player.dy = -player.jumpForce;
-    }
-});
+let obstacles = [];
 
 function update() {
-
     obstacles.forEach(obstacles => {
-        obstacles.x = obstacles.x - 5
+        obstacles.x = obstacles.x - settings.pipeSpeed
     })
 
     player.y += player.dy;
@@ -42,7 +34,7 @@ function update() {
 
     if (player.y + player.height > canvas.height) {
         player.y = canvas.height - player.height;
-        player.dy = 0;
+        lose();
     }
 
     obstacles.forEach(obstacle => {
@@ -50,17 +42,17 @@ function update() {
             player.x + player.width > obstacle.x &&
             player.y < obstacle.y + obstacle.height &&
             player.y + player.height > obstacle.y) {
-            running = false;
-            document.getElementById('lose').classList.remove('hidden');
+            lose();
         }
     });
 
-    if (obstacles[0].x <= -50){
+    if (obstacles[0].x <= 0 - settings.pipeWidth){
         obstacles[0].x = canvas.width;
         obstacles[1].x = canvas.width;
-        obstacles[1].height = Math.floor(Math.random() * 200);
-        obstacles[0].y = obstacles[1].height + 200;
-        obstacles[0].height = canvas.height - obstacles[0].y;
+        obstacles[0].height = Math.floor(Math.random() * (canvas.height - settings.spaceBetweenPipes));
+        obstacles[1].y = obstacles[0].height + settings.spaceBetweenPipes;
+        obstacles[1].height = canvas.height - obstacles[1].y;
+
         points.innerText = `${parseInt(points.innerText) + 1}`;
     }
 
@@ -69,8 +61,12 @@ function update() {
         requestAnimationFrame(update);
     }
 }
-
-
+function lose(){
+    running = false;
+    allowGameToStart = false;
+    loseScreen.classList.remove('hidden');
+    playButton.classList.remove('hidden');
+}
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -82,5 +78,63 @@ function draw() {
         ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     });
 }
+playButton.addEventListener('click', e => {
+    obstacles = getSleepObstacles();
+    player = getSleepPlayer();
+    canvas.classList.remove('hidden');
+    pointContainer.classList.remove('hidden');
+    spaceToStart.classList.remove('hidden');
+    gameTitle.classList.add('hidden');
+    loseScreen.classList.add('hidden');
+    playButton.classList.add('hidden');
+    allowGameToStart = true;
+    draw();
+})
+document.addEventListener('keypress', (e) => {
+    if (allowGameToStart){
+        if (!running){
+            if (e.key === ' '){
+                jump(true);
+            }
+        }else {
+            if (e.key === ' '){
+                jump(false);
+            }
+        }
+    }
+});
+function jump(forStart){
+    if (forStart){
+        spaceToStart.classList.add('hidden');
+        running = true;
+        update();
+    }
+    player.dy = -player.jumpForce;
+}
 
-update();
+function getSleepObstacles(){
+    return [
+        {
+        x: (canvas.width + settings.pipeWidth),
+        y: 0,
+        width: settings.pipeWidth,
+        height: ((canvas.height - settings.spaceBetweenPipes) / 2)},
+        {
+            x: (canvas.width + settings.pipeWidth),
+            y: (((canvas.height - settings.spaceBetweenPipes) / 2) + settings.spaceBetweenPipes),
+            width: settings.pipeWidth,
+            height: ((canvas.height - settings.spaceBetweenPipes) / 2)
+        },
+    ]
+}
+function getSleepPlayer(){
+    return {
+        x: settings.playerX,
+        y: canvas.height / 2 - settings.playerHeight,
+        width: settings.playerWidth,
+        height: settings.playerHeight,
+        dy: 0,
+        jumpForce: settings.playerJumpForce,
+        gravity: settings.playerGravity
+    }
+}
