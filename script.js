@@ -11,6 +11,11 @@ const gameTitle = document.getElementById('game-title');
 let running = false;
 let allowGameToStart = false;
 
+highScore.innerText = localStorage.getItem("highScore");
+if (localStorage.getItem("highScore") == null){
+    highScore.innerText = `0`;
+}
+
 let player = null;
 
 const settings= {
@@ -87,16 +92,11 @@ function draw() {
     });
 }
 playButton.addEventListener('click', e => {
-    highScore.innerText = localStorage.getItem("highScore");
-    if (localStorage.getItem("highScore") == null){
-        highScore.innerText = `0`;
-    }
     obstacles = getSleepObstacles();
     player = getSleepPlayer();
     canvas.classList.remove('hidden');
     pointContainer.classList.remove('hidden');
     spaceToStart.classList.remove('hidden');
-    highScoreContainer.classList.remove('hidden');
     gameTitle.classList.add('hidden');
     loseScreen.classList.add('hidden');
     playButton.classList.add('hidden');
